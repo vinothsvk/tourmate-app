@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TourMate App</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
+      color: #fff;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #e94560;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #e94560;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🌍 TourMate</h1>
+<p>Simple Tour Planner App</p>
+
+<div class="card">
+  <h3>Add Member</h3>
+  <input id="name" placeholder="Enter name" />
+  <br><br>
+  <button onclick="addMember()">Add</button>
+</div>
+
+<div class="card">
+  <h3>Members</h3>
+  <ul id="list"></ul>
+</div>
+
+<!-- 🔥 Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* 🔴 REPLACE THIS WITH YOUR FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* Add Member */
+window.addMember = async function() {
+  const name = document.getElementById("name").value;
+  if (!name) return alert("Enter name");
+
+  await addDoc(collection(db, "members"), { name });
+
+  document.getElementById("name").value = "";
+  loadMembers();
+}
+
+/* Load Members */
+async function loadMembers() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db, "members"));
+  querySnapshot.forEach((doc) => {
+    const li = document.createElement("li");
+    li.textContent = doc.data().name;
+    list.appendChild(li);
+  });
+}
+
+/* Init */
+loadMembers();
+
+</script>
+
+</body>
+</html>
